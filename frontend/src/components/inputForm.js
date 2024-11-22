@@ -1,9 +1,8 @@
-
 import axios from "axios";
 import { useState } from 'react';
 
 function InputForm() {
-  const [apiInput, setApiInput] = useState('{"data":["M","1","334","4","B","z","a"]}');
+  const [apiInput, setApiInput] = useState('{"data":["M","1","4","B","z","a"]}');
   const [filterType, setFilterType] = useState('all');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [responseData, setResponseData] = useState(null);
@@ -15,8 +14,6 @@ function InputForm() {
 
       // Clear previous error message if the input is valid
       setErrorMessage('');
-      
-
 
       let data = JSON.parse(apiInput);
       const response = await axios.post("https://bfhl-server-swart.vercel.app/bfhl/post", data);
@@ -74,10 +71,11 @@ function InputForm() {
 
       <button
         onClick={handleSubmit}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out"
+        className="w-full bg-yellow-400 text-black hover:bg-blue-700 font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out"
       >
         Submit
       </button>
+
       {
       responseData != null && <div className="space-y-4">
         <div className="relative">
@@ -113,7 +111,7 @@ function InputForm() {
 
         {responseData && (
           <div className="space-y-2">
-            <h2 className="text-sm font-medium">Filtered Response</h2>
+            <h2 className="text-sm font-medium text-white">Filtered Response</h2>
             <pre className="bg-gray-100 p-2 rounded-md text-sm overflow-auto">
               {getFilteredResponse()}
             </pre>

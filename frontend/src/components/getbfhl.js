@@ -21,7 +21,7 @@ const Getbfhl = () => {
       <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-300 mb-2">Get API Call</h2>
       <button
         onClick={handleSubmit}
-        className="w-full p-2 text-white bg-yellow-500 rounded hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-300 transition"
+        className="w-full p-2 text-black bg-yellow-500 rounded hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-300 transition"
       >
         Submit
       </button>
