@@ -13,7 +13,7 @@ const InputForm = () => {
     e.preventDefault();
     try {
       const data = JSON.parse(jsonInput);
-      const response = await axios.post( "http://localhost:4000/bfhl/post", data);
+      const response = await axios.post( "https://bfhl-server-swart.vercel.app/bfhl/post", data);
       setResponseData(response.data);
       setError("");
     } catch (err) {
