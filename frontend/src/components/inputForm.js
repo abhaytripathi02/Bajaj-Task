@@ -15,6 +15,7 @@ function InputForm() {
 
       // Clear previous error message if the input is valid
       setErrorMessage('');
+      
 
 
       let data = JSON.parse(apiInput);
