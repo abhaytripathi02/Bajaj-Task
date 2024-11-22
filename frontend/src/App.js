@@ -5,7 +5,7 @@ import './App.css'
 function App() {
   return (
     <div>
-      <h1>bajaj finserv task BFHL </h1>
+      <h1 className="p-1 font-extrabold text-red-500">bajaj finserv task BFHL </h1>
       <InputForm />
     </div>
   );

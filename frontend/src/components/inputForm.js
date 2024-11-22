@@ -22,7 +22,7 @@ const InputForm = () => {
   };
 
   return (
-    <div className="p-10 bg-slate-800">
+    <div>
       <form onSubmit={handleSubmit}>
         <textarea
           value={jsonInput}
