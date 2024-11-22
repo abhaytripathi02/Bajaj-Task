@@ -1,98 +1,127 @@
-import React, { useState } from "react";
+
 import axios from "axios";
-import ResponseDisplay from "./responseDisplay";
+import { useState } from 'react';
 
-const InputForm = () => {
-  const [jsonInput, setJsonInput] = useState("");
+function InputForm() {
+  const [apiInput, setApiInput] = useState('{"data":["M","1","334","4","B","z","a"]}');
+  const [filterType, setFilterType] = useState('all');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [responseData, setResponseData] = useState(null);
-  const [error, setError] = useState("");
-
-
-  const [selectedOptions, setSelectedOptions] = useState([]);
-
-
-     // Options for the dropdown
-    const options = [
-      { label: 'Alphabets', value: 'alphabets' },
-      { label: 'Numbers', value: 'numbers' },
-      { label: 'Highest Lowercase Alphabet', value: 'highestLowercase' },
-    ];
-
-
-
-  // Handle dropdown selection
-  const handleOptionChange = (event) => {
-    const value = event.target.value;
-    setSelectedOptions((prev) =>
-      prev.includes(value)
-        ? prev.filter((option) => option !== value) // Deselect if already selected
-        : [...prev, value] // Add to selected options
-    );
-  };
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const data = JSON.parse(jsonInput);
+    try {     
+
+      // Clear previous error message if the input is valid
+      setErrorMessage('');
+
+
+      let data = JSON.parse(apiInput);
       const response = await axios.post("https://bfhl-server-swart.vercel.app/bfhl/post", data);
+
       setResponseData(response.data);
-      setError("");
-    } catch (err) {
-      setError("Invalid JSON or server error");
+    } catch (error) {
+      setResponseData(null);
+      setErrorMessage('Invalid JSON input. Please check your input format.');
+      console.error("Error:", error);
+    }
+  };
+
+  const filterOptions = [
+    { value: 'alphabets', label: 'Alphabets' },
+    { value: 'numbers', label: 'Numbers' },
+    { value: 'highest-lowercase', label: 'Highest lowercase alphabet' },
+    { value: 'all', label: 'Show All' },
+  ];
+
+  const getFilteredResponse = () => {
+    if (!responseData) return null;
+
+    if (filterType === 'all') {
+      return JSON.stringify(responseData, null, 2);
+    }
+
+    switch (filterType) {
+      case 'alphabets':
+        return `Alphabets: ${responseData.alphabets?.join(', ') || 'N/A'}`;
+      case 'numbers':
+        return `Numbers: ${responseData.numbers?.join(', ') || 'N/A'}`;
+      case 'highest-lowercase':
+        return `Highest Lowercase Alphabet: ${responseData.highest_lowercase_alphabet?.join(', ') || 'N/A'}`;
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-screen-md mx-auto">
-      <form onSubmit={handleSubmit}>
-        <textarea
-          value={jsonInput}
-          onChange={(e) => setJsonInput(e.target.value)}
-          placeholder="Enter Data in JSON Format"
-          rows="6"
-          className="w-full p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-yellow-500 focus:outline-none dark:bg-gray-700 dark:text-white"
+    <div className="max-w-2xl mx-auto p-6 space-y-4">
+      <div className="space-y-2">
+        <label htmlFor="api-input" className="text-sm text-gray-600">
+          API Input
+        </label>
+        <input
+          id="api-input"
+          value={apiInput}
+          onChange={(e) => setApiInput(e.target.value)}
+          className={`w-full px-3 py-2 border rounded-md font-mono focus:outline-none ${
+            errorMessage ? 'border-red-500' : 'border-gray-300'
+          }`}
         />
+        {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+      </div>
 
-
-       {/* Multi-Select Dropdown */}
-       {1 && (
-        <div className="mt-6">
-          <label className="block text-gray-100 font-semibold mb-2">Choose Options:</label>
-          <select
-            multiple
-            value={selectedOptions}
-            onChange={handleOptionChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+      <button
+        onClick={handleSubmit}
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out"
+      >
+        Submit
+      </button>
+      {
+      responseData != null && <div className="space-y-4">
+        <div className="relative">
+          <div
+            className="flex items-center justify-between border rounded-md p-2 bg-gray-50 cursor-pointer"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           >
-            {options.map((option) => (
-              <option key={option.value} value={option.value} className="p-2">
-                {option.label}
-              </option>
-            ))}
-          </select>
-          <div className="mt-4">
-            <strong className="text-gray-100">Selected Options:</strong>{' '}
-            <span className="text-blue-600">{selectedOptions.join(', ') || 'None'}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-sm">Multi Filter</span>
+              <div className="flex items-center gap-1 bg-gray-200 rounded px-2 py-1">
+                <span className="text-sm">{filterOptions.find(option => option.value === filterType).label}</span>
+              </div>
+            </div>
+            <span className="text-sm text-gray-500">▼</span>
           </div>
+          {isDropdownOpen && (
+            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+              {filterOptions.map((option) => (
+                <div
+                  key={option.value}
+                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => {
+                    setFilterType(option.value);
+                    setIsDropdownOpen(false);
+                  }}
+                >
+                  {option.label}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      )}
 
-
-        <button
-          type="submit"
-          className="mt-4 w-full p-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 focus:ring-2 focus:ring-yellow-300 transition"
-        >
-          Submit
-        </button>
-      </form>
-      {error && <p className="mt-4 text-red-500 font-medium">{error}</p>}
-      {responseData && (
-        <div className="mt-4">
-          <ResponseDisplay data={responseData} />
-        </div>
-      )}
+        {responseData && (
+          <div className="space-y-2">
+            <h2 className="text-sm font-medium">Filtered Response</h2>
+            <pre className="bg-gray-100 p-2 rounded-md text-sm overflow-auto">
+              {getFilteredResponse()}
+            </pre>
+          </div>
+        )}
+      </div>
+}
     </div>
   );
-};
+}
 
 export default InputForm;
