@@ -1,0 +1,10 @@
+
+{
+    "users": {
+      "john_doe": {
+        "user_id": "john_doe_17091999",
+        "email": "john@xyz.com",
+        "roll_number": "ABCD123"
+      }
+    }
+  }
